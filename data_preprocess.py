@@ -24,10 +24,12 @@ def read_imdb(path='./datasets/tweet_emotions.csv', split=0.8):
     '''
     # label_map = { "positive" : 1 , "negative" : 0 }
     label_map = { "neutral" : 0 , "worry" : 1 , "happiness" : 2 , "sadness" : 3, "love" : 4, "surprise" : 5, "fun" : 6, "relief" : 7, "hate" : 8 ,"empty" : 9, "enthusiasm" : 10, "boredom" : 11, "anger" : 12}
+    # label_map = { "positive" : 1 , "negative" : 0 , "happiness" : 2 , "sadness" : 3, "love" : 4, "surprise" : 5, "fun" : 6, "relief" : 7, "hate" : 8 ,"empty" : 9, "enthusiasm" : 10, "boredom" : 11, "anger" : 12}
     tokenizer = get_tokenizer('basic_english')
     with open(path, "r") as f:
         # texts = [[tokenizer(i.rsplit(",", 1)[0][1:-1]), label_map[i.rsplit(",", 1)[1].replace("\n", "")]] for i in f.readlines()[1:]]
         texts = [[tokenizer(i.split(",", 2)[2].replace("\n", "").replace("\"" , "")), label_map[i.split(",", 2)[1]]] for i in f.readlines()[1:]]
+    # print(texts[:20])
     split_num = int(len(texts)*split)
     train_sets = texts[:split_num]
     test_sets = texts[split_num:]
