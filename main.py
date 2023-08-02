@@ -16,7 +16,8 @@ set_seed()
 BATCH_SIZE = 50
 # BATCH_SIZE = 64
 LEARNING_RATE = 0.0009
-NUM_EPOCHS = 10
+NUM_EPOCHS = 8
+TEST_NUM = 1
 
 
 def get_time_dif(start_time):
@@ -62,18 +63,19 @@ for epoch in range(1, NUM_EPOCHS + 1):
 
     print(f"Avg train loss: {avg_train_loss / (batch_idx + 1):.4f}\n")
 
-time_dif = get_time_dif(start_time)
-print("Time Usage:", time_dif)
+    time_dif = get_time_dif(start_time)
+    print("Time Usage:", time_dif)
 
-# 保存模型
-# torch.save(model, 'textcnn.pt')
+    # 保存模型
+    # torch.save(model, 'textcnn.pt')
 
-# 进行测试
-acc = 0
-for X, y in test_loader:
-    with torch.no_grad():
-        X, y = X.to(device), y.to(device)
-        pred = model(X)
-        acc += (pred.argmax(1) == y).sum().item()
+    # 进行测试
+    if epoch % TEST_NUM == 0:
+        acc = 0
+        for X, y in test_loader:
+            with torch.no_grad():
+                X, y = X.to(device), y.to(device)
+                pred = model(X)
+                acc += (pred.argmax(1) == y).sum().item()
 
-print(f"Accuracy: {acc / len(test_loader.dataset):.4f}")
+        print(f"Accuracy: {acc / len(test_loader.dataset):.4f}")
