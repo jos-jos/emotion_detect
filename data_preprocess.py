@@ -1,4 +1,5 @@
 import os
+import pickle
 import torch
 from torchtext.data import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
@@ -9,7 +10,8 @@ from torch.utils.data import TensorDataset
 # 读取数据集，进行分词，并返回分词后的影评和数字标签
 # def read_imdb(path='/home/previous/work/nlp/TextCNN/data/train/IMDB_Dataset.csv', split=0.8):
 # def read_imdb(path='./datasets/IMDB_Dataset.csv', split=0.8):
-def read_imdb(path='./datasets/tweet_emotions.csv', split=0.8):
+# def read_imdb(path='./datasets/tweet_emotions.csv', split=0.8):
+def read_imdb(path='./datasets/merged_training.pkl', split=0.8):
     '''
     reviews, labels = [], []
     # 创建分词器
@@ -23,12 +25,17 @@ def read_imdb(path='./datasets/tweet_emotions.csv', split=0.8):
     return reviews, labels
     '''
     # label_map = { "positive" : 1 , "negative" : 0 }
-    label_map = { "neutral" : 0 , "worry" : 1 , "happiness" : 2 , "sadness" : 3, "love" : 4, "surprise" : 5, "fun" : 6, "relief" : 7, "hate" : 8 ,"empty" : 9, "enthusiasm" : 10, "boredom" : 11, "anger" : 12}
+    # label_map = { "neutral" : 0 , "worry" : 1 , "happiness" : 2 , "sadness" : 3, "love" : 4, "surprise" : 5, "fun" : 6, "relief" : 7, "hate" : 8 ,"empty" : 9, "enthusiasm" : 10, "boredom" : 11, "anger" : 12}
     # label_map = { "positive" : 1 , "negative" : 0 , "happiness" : 2 , "sadness" : 3, "love" : 4, "surprise" : 5, "fun" : 6, "relief" : 7, "hate" : 8 ,"empty" : 9, "enthusiasm" : 10, "boredom" : 11, "anger" : 12}
+    label_map = { "joy" : 0 , "sadness" : 1 , "anger" : 2 , "fear" : 3, "love" : 4, "surprise" : 5}
     tokenizer = get_tokenizer('basic_english')
-    with open(path, "r") as f:
-        # texts = [[tokenizer(i.rsplit(",", 1)[0][1:-1]), label_map[i.rsplit(",", 1)[1].replace("\n", "")]] for i in f.readlines()[1:]]
-        texts = [[tokenizer(i.split(",", 2)[2].replace("\n", "").replace("\"" , "")), label_map[i.split(",", 2)[1]]] for i in f.readlines()[1:]]
+    with open(path, "rb") as f:
+        data = pickle.load(f)
+        data_list = data.values.tolist()
+    # with open(path, "r") as f:
+        # texts = [[tokenizer(i.rsplit(",", 1)[0]), label_map[i.rsplit(",", 1)[1].replace("\n", "")]] for i in data_list[1:]]
+        texts = [[tokenizer(i[0]), label_map[i[1]]] for i in data_list[1:]]
+        # texts = [[tokenizer(i.split(",", 2)[2].replace("\n", "").replace("\"" , "")), label_map[i.split(",", 2)[1]]] for i in f.readlines()[1:]]
     # print(texts[:20])
     split_num = int(len(texts)*split)
     train_sets = texts[:split_num]
@@ -54,6 +61,7 @@ def build_dataset(reviews, labels, vocab, max_len=512):
 def load_imdb():
     reviews_train, labels_train, reviews_test, labels_test = read_imdb()
     # 创建词汇字典，输入需为可迭代对象
+    
     vocab = build_vocab_from_iterator(reviews_train, min_freq=3, specials=['<pad>', '<unk>'])
     vocab.set_default_index(vocab['<unk>'])
 
