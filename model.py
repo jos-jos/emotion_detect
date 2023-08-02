@@ -23,11 +23,11 @@ class TextCNN(nn.Module):
         self.pool = nn.AdaptiveMaxPool1d(1)
         self.relu = nn.ReLU()
         # dropout，提升模型泛化能力，防止过拟合
-        self.dropout = nn.Dropout(0.2)
+        self.dropout = nn.Dropout(0.5)
         # 逻辑回归做二分类
         # 全连接层
         # self.fc = nn.Linear(sum(num_channels) * 2, 2)
-        self.fc = nn.Linear(sum(num_channels) * 2, 13)
+        self.fc = nn.Linear(sum(num_channels) * 2, 6)
         self.apply(self._init_weights)
 
     def forward(self, x):
