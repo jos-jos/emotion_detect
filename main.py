@@ -13,7 +13,7 @@ from model import TextCNN
 set_seed()
 
 # 设置参数
-BATCH_SIZE = 50
+BATCH_SIZE = 200
 # BATCH_SIZE = 64
 LEARNING_RATE = 0.0009
 NUM_EPOCHS = 8
